@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SOMNI</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+      body { margin: 0; }
+      html {
+        background: url("assets/kiwi.jpg") no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+      }
+      canvas { width: 100%; height: 100%; };
+    </style>
+  </head>
+
+  <body>
+    <script src="js/three.js"></script>
+    <script src="js/controls/OrbitControls.js"></script>
+    <script src="js/renderers/CSS3DRenderer.js"></script>
+
+    <div id="container"></div>
+    <div id="blocker"></div>
+
+    <script>
+      var camera, scene, renderer;
+      var controls;
+      var group;
+
+      var Element = function(id, x, y, z, ry) {
+        var height = '720px';
+        var width =  '540px';
+
+        var div = document.createElement( 'div' );
+        div.style.width = height;
+        div.style.height = width;
+        div.style.backgroundColor = '#000';
+
+        var iframe = document.createElement( 'iframe' );
+        iframe.style.width = height;
+        iframe.style.height = width;
+        iframe.style.border = '0px';
+        iframe.src = [ 'https://www.youtube.com/embed/', id, '?rel=0&autoplay=1' ].join( '' );
+        div.appendChild( iframe );
+
+        var object = new THREE.CSS3DObject( div );
+        object.position.set( x, y, z );
+        object.rotation.y = ry;
+
+        return object;
+
+      };
+
+      init();
+      animate();
+
+      function init() {
+
+        var container = document.getElementById( 'container' );
+
+        camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 5000 );
+        camera.position.set( 500, 350, 750 );
+
+        scene = new THREE.Scene();
+
+        renderer = new THREE.CSS3DRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.domElement.style.position = 'absolute';
+        renderer.domElement.style.top = 0;
+
+        container.appendChild( renderer.domElement );
+
+        var overlapInt = 237;
+
+        group = new THREE.Group();
+        group.add( new Element( 'x_jyN8h-9gk', 0, 0, overlapInt, 0 ) );
+        group.add( new Element( 'x_jyN8h-9gk', overlapInt, 0, 0, Math.PI / 2 ) );
+        group.add( new Element( 'x_jyN8h-9gk', 0, 0, -overlapInt, Math.PI ) );
+        group.add( new Element( 'x_jyN8h-9gk', -overlapInt, 0, 0, - Math.PI / 2 ) );
+        scene.add( group );
+
+        // var ambientLight = new THREE.AmbientLight(0xFF0000, 0.8);
+        // scene.add(ambientLight);
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        window.addEventListener('resize', onWindowResize, false);
+
+        // Block iframe events when dragging camera
+
+        var blocker = document.getElementById( 'blocker' );
+        blocker.style.display = 'none';
+
+        document.addEventListener( 'mousedown', function () { blocker.style.display = ''; } );
+        document.addEventListener( 'mouseup', function () { blocker.style.display = 'none'; } );
+      }
+
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+      }
+
+      var direction = 'forward';
+      var unitsTraveled = 0;
+
+      function animate() {
+        requestAnimationFrame( animate );
+        controls.update();
+
+        group.rotation.x += 0.01;
+        group.rotation.y += 0.01;
+
+        // if (direction == 'forward') {
+        //   group.rotation.z += 0.01;
+        //   unitsTraveled += 1;
+        //
+        //   if (unitsTraveled > 9) {
+        //     direction = 'backward';
+        //     unitsTraveled = 0;
+        //   }
+        // } else {
+        //   group.rotation.z -= 0.01;
+        //   unitsTraveled += 1;
+        //
+        //   if (unitsTraveled > 9) {
+        //     direction = 'forward';
+        //     unitsTraveled = 0;
+        //   }
+        // }
+
+        renderer.render( scene, camera );
+      }
+
+    </script>
+  </body>
+</html>
